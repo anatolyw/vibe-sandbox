@@ -1,0 +1,74 @@
+services:
+  vibe:
+    image: node:22-bookworm          # good base for most agents (OpenCode, Kilo, Continue, etc.)
+    container_name: vibe-agent
+    working_dir: ${CONTAINER_WORK_DIR:-/workspace}
+    stdin_open: true
+    tty: true
+    # Keep the container alive so you can docker exec into it
+    command: sleep infinity
+
+    # Run as your host user so created files are not owned by root
+    user: "${UID:-1000}:${GID:-1000}"
+
+    env_file:
+      - .env
+
+    environment:
+      # Make host reachable from the container (macOS/Windows Docker Desktop works out of the box)
+      # Linux users: the extra_hosts line below is required
+      HOST_GATEWAY: host.docker.internal
+
+      # IntelliJ MCP – agents can read these
+      IDEA_MCP_URL: http://${IDEA_MCP_HOST:-host.docker.internal}:${IDEA_MCP_PORT:-64342}/sse
+      # Some clients prefer /stream
+      IDEA_MCP_STREAM_URL: http://${IDEA_MCP_HOST:-host.docker.internal}:${IDEA_MCP_PORT:-64342}/stream
+      IDEA_MCP_HEADERS: '{"IJ_MCP_SERVER_PROJECT_PATH":"${IDEA_MCP_PROJECT_PATH}"}'
+
+      # VSCode MCP Server (Semantic Workbench Team) – agents can read these
+      VSCODE_MCP_URL: http://${VSCODE_MCP_HOST:-host.docker.internal}:${VSCODE_MCP_PORT:-6010}/sse
+      # Some clients also accept the root or /mcp path; /sse is the documented endpoint
+      VSCODE_MCP_STREAM_URL: http://${VSCODE_MCP_HOST:-host.docker.internal}:${VSCODE_MCP_PORT:-6010}/sse
+
+      # Common LLM env names (agents auto-detect many of these)
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+
+      # Convenience
+      WORKDIR: ${CONTAINER_WORK_DIR:-/workspace}
+
+      # Important: use the real home of the "node" user
+      HOME: /home/node
+      npm_config_cache: /home/node/.npm
+
+    volumes:
+      # Project (writable) – the main safety boundary
+      - ${HOST_PROJECT_DIR}:${CONTAINER_WORK_DIR:-/workspace}:rw
+
+      # Agent home – a normal folder you can edit from the host
+      - ./.vibe-home:/home/node:rw
+
+      # SSH keys (read-only) – for git push / ssh
+      - ${HOST_SSH_DIR}:/home/node/.ssh:ro
+
+      # Node / package manager caches
+      - ${HOST_NPM_CACHE}:/home/node/.npm:rw
+      # Uncomment if you use pnpm:
+      # - ${HOST_PNPM_STORE}:/home/node/.local/share/pnpm/store:rw
+
+      # Java / Kotlin build caches
+      - ${HOST_GRADLE_DIR}:/home/node/.gradle:rw
+      - ${HOST_M2_DIR}:/home/node/.m2:rw
+
+    extra_hosts:
+      # Required on Linux; harmless on Docker Desktop (macOS/Windows)
+      - "host.docker.internal:host-gateway"
+
+    # Optional resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G

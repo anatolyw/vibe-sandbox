@@ -1,0 +1,5 @@
+.DS_Store
+node_modules
+dist
+.env
+#.vibe-home/ # Optional, but recommended. IF COMMENTED, review the .gitignore in .vibe-home to ensure it ignores the right files.
