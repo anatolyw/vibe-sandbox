@@ -1,6 +1,5 @@
-# IGNORING mapped volumes that are mounted into the container, because they are not part of the source code and can contain sensitive information or large files. The following directories are ignored:
-.gradle
-.m2
-.npm
-.ssh
-.oh-my-zsh
+# Ignore everything in .vibe-home by default.
+# Only the explicitly un-ignored files below are tracked.
+*
+!.gitignore
+!.bash_profile
