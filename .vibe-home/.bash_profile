@@ -1,5 +1,7 @@
-# ~/.bash_profile – sourced for login shells
+# ~/.bash_profile – bash only (sourced from .zshrc with a guard)
 
-if [ -f ~/.bashrc ]; then
-  . ~/.bashrc
-fi
+# aliases are fine in both bash and zsh
+alias la='ls -la'
+alias ll='ls -l'
+alias ..='cd ..'
+alias ...='cd ../..'

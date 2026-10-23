@@ -1,8 +1,22 @@
 # README
 
+Safe container for vibe coding
+
+This setup gives you:
+- write access limited to the configured project folder
+- LLM keys and MCP endpoints via .env
+- reliable access to IntelliJ and VS Code MCP servers on the host
+- host Oh My Zsh (and plugins like git) reused inside the container
+- simple start/stop
+- a clean image-based base you can use with agents such as Mistral Vibe, OpenCode, Kilo, etc.
+
 ## Pre-requisites
 
-Install and run `Docker`
+- Install and run `Docker`
+- Copy `.env-template` to `.env`, and edit `HOST_PROJECT_DIR` 
+- For `.oh-my-zsh` check and edit if necessary your `~/.zshrc`:
+  - Do a safe source of `~/.bash_profile` like this: `[[ -f ~/.bash_profile ]] && source ~/.bash_profile`
+  - Export of `ZSH` should looks like `export ZSH="$HOME/.oh-my-zsh"` or `export ZSH="${ZSH:-$HOME/.oh-my-zsh}"`. Remove any like `/Users/USER_NAME/.oh-my-zsh`.
 
 ## Daily usage
 
@@ -27,16 +41,16 @@ docker compose exec vibe bash
 docker compose down
 ```
 
-## MCP Setup
+## Host-side MCP Setup
 
-#### IntelliJ CE MCP setup (host side)
+#### IntelliJ CE MCP setup
 
 1. In IntelliJ IDEA Community Edition (2025.2+): **Settings → Tools → MCP Server → enable Enable MCP Server**.
 1. Click **Copy SSE Config** or **Copy HTTP Stream Config**. Note the port (usually starts at `64342`).
 1. Put that port into `.env` as `IDEA_MCP_PORT`.
 1. (Recommended for Docker) In **Settings → Build, Execution, Deployment → Debugger** enable **Can accept external connections** so the MCP server is reachable from the container via `host.docker.internal`.
 
-#### Host-side setup for VSCode
+#### VSCode MCP setup
 
 1. Install the extension: **VSCode MCP Server** by Semantic Workbench Team (`SemanticWorkbenchTeam.mcp-server-vscode`).
 2. It starts automatically (default port `6010`).
@@ -62,35 +76,32 @@ $IDEA_MCP_STREAM_URL     → http://host.docker.internal:64342/stream
 
 | Topic | Recommendation |
 |-|-|
-| Git identity / SSH | Mount `~/.ssh` read-only if you need `git push`, or use HTTPS + token via env. Prefer not mounting the whole home. |
-| Node / package caches | Optional volume for faster installs: `- node_modules_cache:/root/.npm` (or pnpm/yarn). |
-| Swift / Xcode | Docker cannot run the real Xcode toolchain. Keep iOS builds on the host; use the container only for TS/Java/Kotlin/agent logic. |
-| Gradle / Maven caches | Optional: mount `~/.gradle` or `~/.m2` if you want faster Java/Kotlin builds inside the container. |
-| Network isolation | By default the container has internet (needed for LLM APIs). If you want stricter control, add a custom network + firewall rules later. |
-| User ID mismatch | On Linux, file ownership can become root. Add `user: "${UID}:${GID}"` if it bothers you. |
-| Secrets | Never put API keys in the image or in git. `.env` + `env_file` is the right pattern. |
-| Multiple projects | Change `HOST_PROJECT_DIR` in `.env` and recreate the container, or use separate Compose projects. |
-| Agent config persistence | The `vibe-home` volume keeps `~/.config`, history, etc. across restarts. |
+| Swift / Xcode | Docker cannot run the real Xcode toolchain. Keep iOS builds on the host; use the container for TS / Java / Kotlin / agent logic only. |
+| Git identity | `~/.ssh` is mounted read-only for push/fetch. Set `user.name` / `user.email` inside the container (or via env) if commits should not use the image defaults. |
+| Secrets | Never put API keys in the image or in git. Keep using `.env` + `env_file` only; add `.env` to `.gitignore.` (already done) |
+| Multiple projects | Point `HOST_PROJECT_DIR` at another tree and recreate/restart the container, or use a separate Compose project directory. |
+| Network isolation | The container has internet (needed for LLM APIs). Tighten later with a custom network / firewall if you need it. |
+| File ownership | Processes run as uid `1000` (`node`). Files created in the project bind-mount may show up as that user on the host; usually fine on macOS Docker Desktop. |
 
 ## Minimal verification
 
 ```bash
-# From host
-docker compose up -d
+# From host – start stack
+docker compose down
+# rebuild if you changed Dockerfile (locales)
+./start.sh
+docker compose exec vibe zsh
+
 # See first characters of your AI key → Key is available inside container
-docker compose exec vibe bash -c 'echo $MISTRAL_API_KEY | head -c 8; echo;'
+echo $MISTRAL_API_KEY | head -c 8; echo;
 # Check that IDEA MCP is accessible from container
-docker compose exec vibe bash -c 'curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:$IDEA_MCP_PORT/sse || true'
+curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:$IDEA_MCP_PORT/sse || true
 # Check that VSCode MCP is accessible from container
-docker compose exec vibe bash -c 'curl -N -H "Accept: text/event-stream" --max-time 3 "$VSCODE_MCP_URL" 2>/dev/null | head -5; echo "→ exit code: $?"'
+curl -N -H "Accept: text/event-stream" --max-time 3 "$VSCODE_MCP_URL" 2>/dev/null | head -5; echo "→ exit code: $?"
+
+echo $ZSH                                   # /home/node/.oh-my-zsh
+[[ -f $ZSH/oh-my-zsh.sh ]] && echo omz_ok   # should be *omz_ok*
+la                                          # alias from bash_profile
+type glo                                    # git plugin function
+echo $LANG                                  # should be *UTF-8*
 ```
-
-You should see the beginning of your key and (if IntelliJ MCP is running) an HTTP response.
-
-This gives you:
-
-- write access limited to the configured project folder
-- all LLM keys and MCP endpoints via `.env`
-- reliable access to IntelliJ’s MCP server on the host
-- simple start/stop commands
-- a clean base you can later switch to any of the CLIs we discussed (Mistral Vibe, OpenCode, Kilo, etc.)
