@@ -13,21 +13,21 @@ This setup gives you:
 ## Pre-requisites
 
 - Install and run `Docker`
-- Copy `.env-template` to `.env`, and edit `HOST_PROJECT_DIR` 
+- Copy `.env-template` to `.env`, and edit `HOST_PROJECT_DIR`
 - For `.oh-my-zsh` check and edit if necessary your `~/.zshrc`:
   - Do a safe source of `~/.bash_profile` like this: `[[ -f ~/.bash_profile ]] && source ~/.bash_profile`
-  - Export of `ZSH` should looks like `export ZSH="$HOME/.oh-my-zsh"` or `export ZSH="${ZSH:-$HOME/.oh-my-zsh}"`. Remove any like `/Users/USER_NAME/.oh-my-zsh`.
+  - Export of `ZSH` should look like `export ZSH="$HOME/.oh-my-zsh"` or `export ZSH="${ZSH:-$HOME/.oh-my-zsh}"`. Remove any hard-coded `/Users/USER_NAME/.oh-my-zsh`.
 
 ## Daily usage
 
 ```bash
-# Start
+# Start (builds image if Dockerfile or context changed)
 ./start.sh
 # or
-docker compose up -d
+docker compose up -d --build
 
-# Enter the sandbox
-docker compose exec vibe bash
+# Enter the sandbox (zsh is the default shell)
+docker compose exec vibe zsh
 
 # Inside the container you are already in /workspace (your project)
 # Install / run your preferred agent, e.g.:
@@ -78,17 +78,17 @@ $IDEA_MCP_STREAM_URL     → http://host.docker.internal:64342/stream
 |-|-|
 | Swift / Xcode | Docker cannot run the real Xcode toolchain. Keep iOS builds on the host; use the container for TS / Java / Kotlin / agent logic only. |
 | Git identity | `~/.ssh` is mounted read-only for push/fetch. Set `user.name` / `user.email` inside the container (or via env) if commits should not use the image defaults. |
-| Secrets | Never put API keys in the image or in git. Keep using `.env` + `env_file` only; add `.env` to `.gitignore.` (already done) |
+| Secrets | Never put API keys in the image or in git. Keep using `.env` + `env_file` only; `.env` is already in `.gitignore`. |
 | Multiple projects | Point `HOST_PROJECT_DIR` at another tree and recreate/restart the container, or use a separate Compose project directory. |
 | Network isolation | The container has internet (needed for LLM APIs). Tighten later with a custom network / firewall if you need it. |
-| File ownership | Processes run as uid `1000` (`node`). Files created in the project bind-mount may show up as that user on the host; usually fine on macOS Docker Desktop. |
+| File ownership | Default process uid is `1000` (`node`). On Docker Desktop (macOS) this is usually fine. On Linux set `UID`/`GID` in `.env` to your host ids if you want bind-mounted files owned by your user. |
+| Container restart | `restart: unless-stopped` keeps the sandbox available after Docker daemon restarts. |
 
 ## Minimal verification
 
 ```bash
 # From host – start stack
 docker compose down
-# rebuild if you changed Dockerfile (locales)
 ./start.sh
 docker compose exec vibe zsh
 

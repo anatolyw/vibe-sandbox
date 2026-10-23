@@ -1,0 +1,2 @@
+- Working conventions: After every code-change iteration, always provide the exact list of touched files (created, modified, deleted).
+- Working conventions: After every code-change iteration, always propose a git commit message in two forms — short (single line) and full.

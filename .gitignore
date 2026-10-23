@@ -2,4 +2,6 @@
 node_modules
 dist
 .env
-#.vibe-home/ # Optional, but recommended. IF COMMENTED, review the .gitignore in .vibe-home to ensure it ignores the right files.
+
+# Keep .vibe-home in the repo (it holds .bash_profile and .gitignore).
+# Sensitive/cache subdirs inside it are listed in .vibe-home/.gitignore.

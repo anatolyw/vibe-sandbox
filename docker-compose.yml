@@ -3,13 +3,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: vibe-agent:local          # tag so we don't keep rebuilding anonymously
+    image: vibe-agent:local          # stable local tag (avoids anonymous rebuilds)
     container_name: vibe-agent
     working_dir: ${CONTAINER_WORK_DIR:-/workspace}
     stdin_open: true
     tty: true
+    restart: unless-stopped
 
-    # Run as your host user so created files are not owned by root
+    # Default to the image's "node" user (uid 1000). Override via UID/GID in .env
+    # if you need host-user ownership of bind-mounted files (common on Linux).
+    # On Docker Desktop (macOS/Windows) uid 1000 is usually fine.
     user: "${UID:-1000}:${GID:-1000}"
 
     env_file:
@@ -25,7 +28,7 @@ services:
       IDEA_MCP_STREAM_URL: http://${IDEA_MCP_HOST:-host.docker.internal}:${IDEA_MCP_PORT:-64342}/stream
       IDEA_MCP_HEADERS: '{"IJ_MCP_SERVER_PROJECT_PATH":"${IDEA_MCP_PROJECT_PATH}"}'
 
-      # VSCode MCP Server (Semantic Workbench Team)
+      # VSCode MCP Server (Semantic Workbench Team) – SSE endpoint
       VSCODE_MCP_URL: http://${VSCODE_MCP_HOST:-host.docker.internal}:${VSCODE_MCP_PORT:-6010}/sse
       VSCODE_MCP_STREAM_URL: http://${VSCODE_MCP_HOST:-host.docker.internal}:${VSCODE_MCP_PORT:-6010}/sse
 
@@ -54,11 +57,11 @@ services:
       # SSH keys (read-only) – for git push / ssh
       - ${HOST_SSH_DIR}:/home/node/.ssh:ro
 
-      # Reuse host Oh My Zsh (overrides whatever is under .vibe-home for these paths)
+      # Reuse host Oh My Zsh (host paths take precedence)
       - ${HOST_OH_MY_ZSH}:/home/node/.oh-my-zsh:ro
       - ${HOST_ZSHRC}:/home/node/.zshrc:ro
 
-      # Caches
+      # Caches (host paths; create them on the host if missing)
       - ${HOST_NPM_CACHE}:/home/node/.npm:rw
       # - ${HOST_PNPM_STORE}:/home/node/.local/share/pnpm/store:rw
       - ${HOST_GRADLE_DIR}:/home/node/.gradle:rw
