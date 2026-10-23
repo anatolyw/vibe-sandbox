@@ -2,6 +2,8 @@
 
 Safe container for vibe coding
 
+> **Security:** see [docs/security_review.md](docs/security_review.md) for the threat model, `rw` mount analysis, and hardening recommendations.
+
 This setup gives you:
 - write access limited to the configured project folder
 - LLM keys and MCP endpoints via .env
@@ -83,6 +85,7 @@ $IDEA_MCP_STREAM_URL     → http://host.docker.internal:64342/stream
 | Network isolation | The container has internet (needed for LLM APIs). Tighten later with a custom network / firewall if you need it. |
 | File ownership | Default process uid is `1000` (`node`). On Docker Desktop (macOS) this is usually fine. On Linux set `UID`/`GID` in `.env` to your host ids if you want bind-mounted files owned by your user. |
 | Container restart | `restart: unless-stopped` keeps the sandbox available after Docker daemon restarts. |
+| Security | See [docs/security_review.md](docs/security_review.md). Prefer named volumes for package caches; keep `HOST_PROJECT_DIR` narrow. |
 
 ## Minimal verification
 
