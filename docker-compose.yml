@@ -37,6 +37,8 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       XAI_API_KEY: ${XAI_API_KEY:-}
+      HETZNER_API_KEY: ${HETZNER_API_KEY:-}
+      HETZNER_API_BASE_URL: ${HETZNER_API_BASE_URL:-https://inference.hetzner.com/api/v1}
 
       # Convenience
       WORKDIR: ${CONTAINER_WORK_DIR:-/workspace}
