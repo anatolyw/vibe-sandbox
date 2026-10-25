@@ -67,6 +67,17 @@ services:
       - ${HOST_GRADLE_DIR}:/home/node/.gradle:rw
       - ${HOST_M2_DIR}:/home/node/.m2:rw
 
+      # OpenCode persistence (survive image rebuild / container recreate)
+      # auth.json + sessions/conversations live under share; global config under config;
+      # state (model prefs, prompt history) under state; package cache under cache.
+      # Only the opencode *subdir* is mounted — parents (.cache, .config, .local/…)
+      # stay image-owned (created as node in the Dockerfile) so oh-my-zsh and other
+      # tools can still write siblings like ~/.cache/oh-my-zsh.
+      - ./.vibe-home/opencode/config:/home/node/.config/opencode:rw
+      - ./.vibe-home/opencode/share:/home/node/.local/share/opencode:rw
+      - ./.vibe-home/opencode/state:/home/node/.local/state/opencode:rw
+      - ./.vibe-home/opencode/cache:/home/node/.cache/opencode:rw
+
     extra_hosts:
       # Required on Linux; harmless on Docker Desktop (macOS/Windows)
       - "host.docker.internal:host-gateway"

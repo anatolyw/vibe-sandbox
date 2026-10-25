@@ -3,3 +3,16 @@
 *
 !.gitignore
 !.bash_profile
+
+# OpenCode persistence dirs exist on disk (created by start.sh) but must never
+# be committed: they hold API keys (auth.json), session/conversation data, and caches.
+# Un-ignore the parent first so nested paths can be listed, then ignore contents.
+!opencode/
+!opencode/config/
+!opencode/share/
+!opencode/state/
+!opencode/cache/
+opencode/config/**
+opencode/share/**
+opencode/state/**
+opencode/cache/**

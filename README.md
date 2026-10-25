@@ -31,11 +31,22 @@ docker compose up -d --build
 # Enter the sandbox (zsh is the default shell)
 docker compose exec vibe zsh
 
-# Inside the container you are already in /workspace (your project)
-# Install / run your preferred agent, e.g.:
-#   npm i -g @kilocode/cli && kilo
-#   or curl -fsSL https://opencode.ai/install | bash && opencode
-#   or the Mistral Vibe one-liner
+# Inside the container you are already in /workspace (your project).
+# OpenCode is preinstalled in the image (PATH is set via .bash_profile).
+#
+# First-time / provider setup:
+#   opencode
+#   /connect          # pick provider (Anthropic, OpenAI, xAI, OpenCode Zen, …) and paste API key
+#   /models           # choose the active model
+#   opencode auth list   # list saved credentials (optional)
+#
+# Keys from /connect and conversation history persist under .vibe-home/opencode/*
+# (mounted into ~/.config|~/.local/share|~/.local/state|~/.cache/opencode) so they
+# survive image rebuilds and container recreates. LLM keys in .env are also available.
+#
+# Other agent CLIs (Kilo, Mistral Vibe, …) are not baked in by default. Add them
+# to the Dockerfile the same way as OpenCode (see the comment block there), then
+# mount their config/cache dirs under .vibe-home if you need persistence across rebuilds.
 
 # Stop
 ./stop.sh
