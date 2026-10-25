@@ -5,3 +5,6 @@ alias la='ls -la'
 alias ll='ls -l'
 alias ..='cd ..'
 alias ...='cd ../..'
+
+# OpenCode CLI (installed in the image under $HOME/.opencode/bin)
+export PATH="$PATH:$HOME/.opencode/bin"
