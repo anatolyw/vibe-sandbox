@@ -13,6 +13,7 @@
 !opencode/state/
 !opencode/cache/
 opencode/config/**
+!opencode/config/opencode.json
 opencode/share/**
 opencode/state/**
 opencode/cache/**
