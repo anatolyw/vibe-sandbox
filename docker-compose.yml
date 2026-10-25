@@ -51,9 +51,7 @@ services:
       # Project (writable) – the main safety boundary
       - ${HOST_PROJECT_DIR}:${CONTAINER_WORK_DIR:-/workspace}:rw
 
-      # Optional agent-only files (NOT the whole home)
-      - ./.vibe-home:/home/node/.vibe-home:rw
-      # Mount only what you still need
+      # Mount what you need to the home of the "node" user (read-only) to avoid accidental writes to the host.
       - ./.vibe-home/.bash_profile:/home/node/.bash_profile:ro
 
       # SSH keys (read-only) – for git push / ssh
