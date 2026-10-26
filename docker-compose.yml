@@ -23,23 +23,6 @@ services:
       # Linux users: the extra_hosts line below is required
       HOST_GATEWAY: host.docker.internal
 
-      # IntelliJ MCP
-      IDEA_MCP_URL: http://${IDEA_MCP_HOST:-host.docker.internal}:${IDEA_MCP_PORT:-64342}/sse
-      IDEA_MCP_STREAM_URL: http://${IDEA_MCP_HOST:-host.docker.internal}:${IDEA_MCP_PORT:-64342}/stream
-      IDEA_MCP_HEADERS: '{"IJ_MCP_SERVER_PROJECT_PATH":"${IDEA_MCP_PROJECT_PATH}"}'
-
-      # VSCode MCP Server (Semantic Workbench Team) – SSE endpoint
-      VSCODE_MCP_URL: http://${VSCODE_MCP_HOST:-host.docker.internal}:${VSCODE_MCP_PORT:-6010}/sse
-      VSCODE_MCP_STREAM_URL: http://${VSCODE_MCP_HOST:-host.docker.internal}:${VSCODE_MCP_PORT:-6010}/sse
-
-      # Common LLM env names (agents auto-detect many of these)
-      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      XAI_API_KEY: ${XAI_API_KEY:-}
-      HETZNER_API_KEY: ${HETZNER_API_KEY:-}
-      HETZNER_API_BASE_URL: ${HETZNER_API_BASE_URL:-https://inference.hetzner.com/api/v1}
-
       # Convenience
       WORKDIR: ${CONTAINER_WORK_DIR:-/workspace}
 
