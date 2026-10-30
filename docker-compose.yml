@@ -15,6 +15,10 @@ services:
     # On Docker Desktop (macOS/Windows) uid 1000 is usually fine.
     user: "${UID:-1000}:${GID:-1000}"
 
+    # Optional port mapping for local debugging (e.g. OpenCode web UI, etc.)
+    ports:
+      - "61000:61000"
+
     env_file:
       - .env
 
