@@ -9,7 +9,8 @@ mkdir -p \
   .vibe-home/opencode/config \
   .vibe-home/opencode/share \
   .vibe-home/opencode/state \
-  .vibe-home/opencode/cache
+  .vibe-home/opencode/cache \
+  .vibe-home/opencode/plan
 chmod -R u+rwX .vibe-home
 
 echo "Starting vibe container (build if needed)..."

@@ -64,6 +64,7 @@ services:
       - ./.vibe-home/opencode/share:/home/node/.local/share/opencode:rw
       - ./.vibe-home/opencode/state:/home/node/.local/state/opencode:rw
       - ./.vibe-home/opencode/cache:/home/node/.cache/opencode:rw
+      - ./.vibe-home/opencode/plan:/home/node/.opencode/plan:rw
 
     extra_hosts:
       # Required on Linux; harmless on Docker Desktop (macOS/Windows)

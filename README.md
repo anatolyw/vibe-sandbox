@@ -128,3 +128,18 @@ la                                          # alias from bash_profile
 type glo                                    # git plugin function
 echo $LANG                                  # should be *UTF-8*
 ```
+
+## Docker compose reference for OpenCode volumes
+                      
+What OpenCode stores in each directory:
+
+| Mount | Purpose | What's inside |
+|----|----|----|
+| ~/.config/opencode | Configuration | auth tokens, provider settings, model prefs, keybinds, themes, global config |
+| ~/.local/share/opencode | Sessions & data | conversation history, sessions, agent state, conversation |
+| ~/.local/state/opencode | Runtime state | model preferences, prompt history, UI state |
+| ~/.cache/opencode | Cache | package cache, model downloads, temporary artifacts |
+| ~/.opencode/plan | Plans | plan files from Plan mode |
+
+Together these cover everything OpenCode generates that needs to survive container rebuilds
+
