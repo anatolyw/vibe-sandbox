@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         python3 \
         mc \
+        fonts-noto-color-emoji \
         # Playwright / Xvfb deps \
         xvfb \
         libnss3 \
