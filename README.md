@@ -23,6 +23,8 @@ This setup gives you:
 ## Daily usage
 
 ```bash
+# Adjust in `docker-compose.yml` ports, which you want to expose. See example inside.
+
 # Start (builds image if Dockerfile or context changed)
 ./start.sh
 # or
