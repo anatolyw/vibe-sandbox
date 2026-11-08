@@ -21,7 +21,7 @@
     "intellij": {
       "type": "remote",
       "url": "{env:IDEA_MCP_STREAM_URL}",
-      "enabled": true,
+      "enabled": false,
       "headers": {
         "IJ_MCP_SERVER_PROJECT_PATH": "{env:IDEA_MCP_PROJECT_PATH}"
       }
@@ -34,6 +34,14 @@
       "headers": {
         "IJ_MCP_SERVER_PROJECT_PATH": "{env:IDEA_MCP_PROJECT_PATH}"
       }
+    },
+    // XcodeMCPBroker on :7341 // https://github.com/grahammckee/XcodeMCPBroker (Xcode v26.3+ Apple Universal)
+    // or XcodeMCPKit on :8765 // https://github.com/lynnswap/XcodeMCPKit (Xcode v27+, Apple Silicon only )
+    "xcode": {
+      "type": "remote",
+      "url": "http://host.docker.internal:7341/mcp",
+      "enabled": true,
+      "oauth": false
     }
   }
 }

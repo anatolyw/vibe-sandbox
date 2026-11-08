@@ -58,49 +58,18 @@ docker compose down
 
 ## Host-side MCP Setup
 
-### IntelliJ CE MCP setup
+See related instruction:
+- [IntelliJ CE MCP setup](./docs/mcp-setup/intellij.md)
+- [VSCode MCP setup](./docs/mcp-setup/vscode.md)
+- [Xcode MCP setup](./docs/mcp-setup/xcode.md)
 
-1. In IntelliJ IDEA Community Edition (2025.2+): **Settings → Tools → MCP Server → enable Enable MCP Server**.
-1. Click **Copy SSE Config** or **Copy HTTP Stream Config**. Note the port (usually starts at `64342`).
-1. **NOTE**: Don't put that port into `.env`. Instead, put a proxy port `64343` (see, [./start-intellij-mcp-proxy.sh](./start-intellij-mcp-proxy.sh) ) as `IDEA_MCP_PORT`.
-1. (Recommended for Docker) In **Settings → Build, Execution, Deployment → Debugger** enable **Can accept external connections** so the MCP server is reachable from the container via `host.docker.internal`. **NOTE:** cannot find this settings in the recent IntelliJ versions!
-1. **NOTE**: The official IntelliJ MCP server binds only to 127.0.0.1, not to all interfaces. From a container, host.docker.internal reaches the host, but the MCP port is not listening there, so you get a refused / forbidden response. We set Host-side reverse proxy (recommended by JetBrains) with `mitmproxy`:
-```bash
-# install once
-brew install mitmproxy
-# run IntelliJ and open related Project before start proxy
-./start-intellij-mcp-proxy.sh
-```
-
-### VSCode MCP setup
-
-**NOTE**: VSCode MCP Server by Semantic Workbench Team looks obsolete. The below reference stays here as example!
-
-1. Install the extension: **VSCode MCP Server** by Semantic Workbench Team (`SemanticWorkbenchTeam.mcp-server-vscode`).
-2. It starts automatically (default port `6010`).
-3. To change the port:
-  - Command Palette → `Set MCP Server Port`, or
-  - Settings → search `mcpServer.port`.
-4. Put the actual port into `.env` as `VSCODE_MCP_PORT`.
-5. No extra “accept external connections” toggle is required (unlike IntelliJ’s debugger setting), but the server must be running while the container is up.
-
-### Usage inside container
-
-Inside the container the agent can then use:
-
-```text
-$VSCODE_MCP_URL          → http://host.docker.internal:6010/sse
-$IDEA_MCP_URL            → http://host.docker.internal:64342/sse
-$IDEA_MCP_STREAM_URL     → http://host.docker.internal:64342/stream
-```
-
-(with the optional `IJ_MCP_SERVER_PROJECT_PATH` header if your client needs it).
+Activate necessary MCP configuration in [./.vibe-home/opencode/config/opencode.jsonc](./.vibe-home/opencode/config/opencode.jsonc) by switch related `enabled` flag to `true`.
 
 ## Important extras
 
 | Topic | Recommendation |
 |-|-|
-| Swift / Xcode | Docker cannot run the real Xcode toolchain. Keep iOS builds on the host; use the container for TS / Java / Kotlin / agent logic only. |
+| Swift / Xcode | Docker cannot run the real Xcode toolchain. Use related Xcode MCP |
 | Git identity | `~/.ssh` is mounted read-only for push/fetch. Set `user.name` / `user.email` inside the container (or via env) if commits should not use the image defaults. |
 | Secrets | Never put API keys in the image or in git. Keep using `.env` + `env_file` only; `.env` is already in `.gitignore`. |
 | Multiple projects | Point `HOST_PROJECT_DIR` at another tree and recreate/restart the container, or use a separate Compose project directory. |
