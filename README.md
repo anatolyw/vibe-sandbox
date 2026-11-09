@@ -56,14 +56,22 @@ docker compose exec vibe zsh
 docker compose down
 ```
 
-## Host-side MCP Setup
+## MCP Setup
+
+### Container build-in vibe-ticket-tracker MCP
+
+This Vibe Sandbox container is shipped with pre-installed [vibe-ticket-tracker](https://github.com/anatolyw/vibe-ticket-tracker) - a local-first ticket tracker built for vibe coders. Container's `start.sh` entry script checks if project (connected to `/workspace` dir) has a `vibe-ticket-tracker.jsonc` config file. If so, it starts `vibe-ticket-tracker` backend with CLI and MCP automatically. Default port (61000) is already exposed through the `docker-compose.yml` config, so you can access it from the browser on your host: http://localhost:61000/. `vibe-ticket-tracker` will create a local `opencode.jsonc` during initialization for the project. It will contain a related MCP entry. Initializer will also create tracker specific agent and skill files, which will help you track and document all changes automatically.
+
+Check [vibe-ticket-tracker](https://github.com/anatolyw/vibe-ticket-tracker) project page for more info.
+
+### Host-side MCP Setup
 
 See related instruction:
 - [IntelliJ CE MCP setup](./docs/mcp-setup/intellij.md)
 - [VSCode MCP setup](./docs/mcp-setup/vscode.md)
 - [Xcode MCP setup](./docs/mcp-setup/xcode.md)
 
-Activate necessary MCP configuration in [./.vibe-home/opencode/config/opencode.jsonc](./.vibe-home/opencode/config/opencode.jsonc) by switch related `enabled` flag to `true`.
+Activate necessary MCP configuration in [./.vibe-home/opencode/config/opencode.jsonc](./.vibe-home/opencode/config/opencode.jsonc) by switch related `disabled` flag to `false`.
 
 ## Important extras
 

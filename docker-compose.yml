@@ -1,7 +1,7 @@
 services:
   vibe:
     build:
-      context: .
+      context: dockerfiles
       dockerfile: Dockerfile
     image: vibe-agent:local          # stable local tag (avoids anonymous rebuilds)
     container_name: vibe-agent

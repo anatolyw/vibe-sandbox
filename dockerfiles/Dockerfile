@@ -62,6 +62,16 @@ RUN mkdir -p /home/node/.cache \
  && ln -s /ms-playwright /home/node/.cache/ms-playwright \
  && chown -R node:node /home/node/.cache
 
+# ---------- Ticket Tracker CLI/MCP (as root) ----------
+RUN npm install -g vibe-ticket-tracker
+
+# ---------- Copy Start script ----------
+COPY ./start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+# -------------------
+# USER-SPECIFIC
+# -------------------
 USER node
 ENV HOME=/home/node \
     SHELL=/bin/zsh \
@@ -84,7 +94,4 @@ RUN curl -fsSL https://opencode.ai/v2/install | bash
 # For full/headful rendering via Xvfb
 ENV DISPLAY=:99
 
-## Default command keeps the container alive for `docker compose exec`
-#CMD ["sleep", "infinity"]
-# Default command: start Xvfb so headful tests work, then stay alive
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1280x720x16 & sleep infinity"]
+CMD ["start.sh"]

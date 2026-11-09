@@ -2,46 +2,46 @@
   "$schema": "https://opencode.ai/config.json",
   "skills": [".agents/skills"],
   "mcp": {
-    // VSCode MCP Server (Semantic Workbench Team) example
-    "vscode": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "mcp-remote",
-        "http://host.docker.internal:6010/sse",
-        "--transport",
-        "sse-only",
-        "--allow-http"
-      ],
-      "enabled": false
-    },
-    // Official JetBrains IntelliJ MCP Server (built-in since 2025.2)
-    // Prefer streamable HTTP; set IDEA_MCP_STREAM_URL / IDEA_MCP_PROJECT_PATH in env
-    "intellij": {
-      "type": "remote",
-      "url": "{env:IDEA_MCP_STREAM_URL}",
-      "enabled": false,
-      "headers": {
-        "IJ_MCP_SERVER_PROJECT_PATH": "{env:IDEA_MCP_PROJECT_PATH}"
+    "servers": {
+      // VSCode MCP Server (Semantic Workbench Team) example
+      "vscode": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "mcp-remote",
+          "http://host.docker.internal:6010/sse",
+          "--transport",
+          "sse-only",
+          "--allow-http"
+        ],
+        "disabled": true
+      },
+      // Official JetBrains IntelliJ MCP Server (built-in since 2025.2)
+      // Prefer streamable HTTP; set IDEA_MCP_STREAM_URL / IDEA_MCP_PROJECT_PATH in env
+      "intellij": {
+        "type": "remote",
+        "url": "{env:IDEA_MCP_STREAM_URL}",
+        "disabled": true,
+        "headers": {
+          "IJ_MCP_SERVER_PROJECT_PATH": "{env:IDEA_MCP_PROJECT_PATH}"
+        }
+      },
+      // SSE fallback (legacy transport) — enable if stream is unavailable
+      "intellij-sse": {
+        "type": "remote",
+        "url": "{env:IDEA_MCP_URL}",
+        "disabled": true,
+        "headers": {
+          "IJ_MCP_SERVER_PROJECT_PATH": "{env:IDEA_MCP_PROJECT_PATH}"
+        }
+      },
+      "xcode": {
+        "type": "remote",
+        "url": "{env:XCODE_MCP_URL}",
+        "disabled": false,
+        "oauth": false
       }
-    },
-    // SSE fallback (legacy transport) — enable if stream is unavailable
-    "intellij-sse": {
-      "type": "remote",
-      "url": "{env:IDEA_MCP_URL}",
-      "enabled": false,
-      "headers": {
-        "IJ_MCP_SERVER_PROJECT_PATH": "{env:IDEA_MCP_PROJECT_PATH}"
-      }
-    },
-    // XcodeMCPBroker on :7341 // https://github.com/grahammckee/XcodeMCPBroker (Xcode v26.3+ Apple Universal)
-    // or XcodeMCPKit on :8765 // https://github.com/lynnswap/XcodeMCPKit (Xcode v27+, Apple Silicon only )
-    "xcode": {
-      "type": "remote",
-      "url": "http://host.docker.internal:7341/mcp",
-      "enabled": true,
-      "oauth": false
     }
   }
 }
